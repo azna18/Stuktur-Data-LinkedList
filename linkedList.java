@@ -1,53 +1,21 @@
 import java.util.Scanner;
 
 public class LinkedList1 {
-    static Scanner input = new Scanner(System.in);
+
     static class Node {
-        String nim;
-        String name;
+        String nim, name;
         Node next;
 
         Node(String nim, String name) {
             this.nim = nim;
             this.name = name;
-            this.next = null;
         }
     }
 
     static Node head = null;
     static int size = 0;
     static final int MAX = 10;
-
-    public static void main(String[] args) {
-        int choice;
-        do {
-            menu();
-            System.out.print("SELECT MENU (Pilih menu): ");
-
-            if (input.hasNextInt()) {
-                choice = input.nextInt();
-                input.nextLine();
-
-                switch (choice) {
-                    case 1 -> insertAtBeginning();
-                    case 2 -> insertAtPosition();
-                    case 3 -> insertAtEnd();
-                    case 4 -> deleteAtBeginning();
-                    case 5 -> deleteAtPosition();
-                    case 6 -> deleteAtEnd();
-                    case 7 -> deleteFirst();
-                    case 8 -> showData();
-                    case 9 -> System.out.println("PROGRAM COMPLETED.");
-                    default -> System.out.println("INVALID MENU!");
-                }
-            } else {
-                System.out.println("INVALID INPUT! ENTER NUMBER 1-9.");
-                input.nextLine();
-                choice = 0;
-            }
-
-        } while (choice != 9);
-    }
+    static Scanner input = new Scanner(System.in);
 
     static void menu() {
         System.out.println("\n=== STUDENT LINKED LIST MENU ===");
@@ -62,42 +30,50 @@ public class LinkedList1 {
         System.out.println("9. Exit");
     }
 
+    static String inputNIM() {
+        while (true) {
+            System.out.print("ENTER NIM: ");
+            String nim = input.nextLine();
+            if (nim.matches("\\d+")) return nim;
+            System.out.println("NIM MUST BE NUMBERS ONLY!");
+        }
+    }
+
+    static String inputName() {
+        while (true) {
+            System.out.print("ENTER NAME: ");
+            String name = input.nextLine();
+            if (name.matches("[a-zA-Z ]+")) return name;
+            System.out.println("NAME MUST BE LETTERS ONLY!");
+        }
+    }
+
     static void insertAtBeginning() {
-        if (size == 10) {
-            System.out.println("DATA FULL!");
+        if (size == MAX) {
+            System.out.println("DATA IS FULL!");
             return;
         }
-        System.out.print("ENTER NIM: ");
-        String nim = input.nextLine();
-        System.out.print("ENTER NAME: ");
-        String name = input.nextLine();
 
-        Node newNode = new Node(nim, name);
+        Node newNode = new Node(inputNIM(), inputName());
         newNode.next = head;
         head = newNode;
-
         size++;
     }
 
     static void insertAtEnd() {
         if (size == MAX) {
-            System.out.println("DATA FULL!");
+            System.out.println("DATA IS FULL!");
             return;
         }
-        System.out.print("ENTER NIM: ");
-        String nim = input.nextLine();
-        System.out.print("ENTER NAME: ");
-        String name = input.nextLine();
 
-        Node newNode = new Node(nim, name);
+        Node newNode = new Node(inputNIM(), inputName());
 
         if (head == null) {
             head = newNode;
         } else {
             Node temp = head;
-            while (temp.next != null) {
+            while (temp.next != null)
                 temp = temp.next;
-            }
             temp.next = newNode;
         }
         size++;
@@ -105,9 +81,10 @@ public class LinkedList1 {
 
     static void insertAtPosition() {
         if (size == MAX) {
-            System.out.println("DATA FULL!");
+            System.out.println("DATA IS FULL!");
             return;
         }
+
         System.out.print("ENTER POSITION (1-" + (size + 1) + "): ");
         int pos = input.nextInt();
         input.nextLine();
@@ -120,20 +97,15 @@ public class LinkedList1 {
             insertAtBeginning();
             return;
         }
-        System.out.print("ENTER NIM: ");
-        String nim = input.nextLine();
-        System.out.print("ENTER NAME: ");
-        String name = input.nextLine();
 
-        Node newNode = new Node(nim, name);
-
+        Node newNode = new Node(inputNIM(), inputName());
         Node temp = head;
-        for (int i = 1; i < pos - 1; i++) {
+
+        for (int i = 1; i < pos - 1; i++)
             temp = temp.next;
-        }
+
         newNode.next = temp.next;
         temp.next = newNode;
-
         size++;
     }
 
@@ -155,9 +127,8 @@ public class LinkedList1 {
             head = null;
         } else {
             Node temp = head;
-            while (temp.next.next != null) {
+            while (temp.next.next != null)
                 temp = temp.next;
-            }
             temp.next = null;
         }
         size--;
@@ -170,6 +141,7 @@ public class LinkedList1 {
         }
         System.out.print("ENTER POSITION (1-" + size + "): ");
         int pos = input.nextInt();
+        input.nextLine();
 
         if (pos < 1 || pos > size) {
             System.out.println("INVALID POSITION!");
@@ -181,15 +153,11 @@ public class LinkedList1 {
         }
 
         Node temp = head;
-        for (int i = 1; i < pos - 1; i++) {
+        for (int i = 1; i < pos - 1; i++)
             temp = temp.next;
-        }
+
         temp.next = temp.next.next;
         size--;
-    }
-
-    static void deleteFirst() {
-        deleteAtBeginning();
     }
 
     static void showData() {
@@ -197,14 +165,45 @@ public class LinkedList1 {
             System.out.println("EMPTY DATA!");
             return;
         }
-        System.out.println("\n=== STUDENT DATA ===");
+
         Node temp = head;
         int i = 1;
-
         while (temp != null) {
             System.out.println(i + ". NIM: " + temp.nim + " | Name: " + temp.name);
             temp = temp.next;
             i++;
         }
+    }
+
+    public static void main(String[] args) {
+        int choice;
+
+        do {
+            menu();
+            System.out.print("SELECT MENU: ");
+
+            if (input.hasNextInt()) {
+                choice = input.nextInt();
+                input.nextLine();
+
+                switch (choice) {
+                    case 1 -> insertAtBeginning();
+                    case 2 -> insertAtPosition();
+                    case 3 -> insertAtEnd();
+                    case 4 -> deleteAtBeginning();
+                    case 5 -> deleteAtPosition();
+                    case 6 -> deleteAtEnd();
+                    case 7 -> deleteAtBeginning();
+                    case 8 -> showData();
+                    case 9 -> System.out.println("PROGRAM COMPLETED.");
+                    default -> System.out.println("INVALID MENU!");
+                }
+            } else {
+                System.out.println("INPUT MUST BE NUMBER!");
+                input.nextLine();
+                choice = 0;
+            }
+
+        } while (choice != 9);
     }
 }
