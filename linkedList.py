@@ -1,124 +1,137 @@
-class Mhs:
-    def __init__(self, nim, nama):
+class Node:
+    def __init__(self, nim, name):
         self.nim = nim
-        self.nama = nama
+        self.name = name
         self.next = None
 
-class LinkedList:
-    def __init__(self):
-        self.head = None
-        self.count = 0
+head = None
+size = 0
+MAX = 10
 
-    def insert_awal(self, nim, nama):
-        n = Mhs(nim, nama)
-        n.next = self.head
-        self.head = n
-        self.count += 1
+def menu():
+    print("\n=== STUDENT LINKED LIST MENU ===")
+    print("1. Insert at beginning")
+    print("2. Insert at given position")
+    print("3. Insert at end")
+    print("4. Delete from beginning")
+    print("5. Delete given position")
+    print("6. Delete from end")
+    print("7. Delete first occurrence")
+    print("8. Show data")
+    print("9. Exit")
 
-    def insert_akhir(self, nim, nama):
-        n = Mhs(nim, nama)
-        if not self.head:
-            self.head = n
+def input_nim():
+    while True:
+        nim = input("ENTER NIM (numbers only): ")
+        if nim.isdigit():
+            return nim
         else:
-            t = self.head
-            while t.next:
-                t = t.next
-            t.next = n
-        self.count += 1
+            print("NIM MUST BE NUMBERS ONLY!")
 
-    def insert_pos(self, nim, nama, pos):
-        if pos < 1 or pos > self.count + 1: return
-        if pos == 1:
-            self.insert_awal(nim, nama)
-            return
-        n = Mhs(nim, nama)
-        t = self.head
-        for _ in range(pos - 2):
-            t = t.next
-        n.next = t.next
-        t.next = n
-        self.count += 1
-
-    def delete_awal(self):
-        if not self.head: return
-        self.head = self.head.next
-        self.count -= 1
-
-    def delete_akhir(self):
-        if not self.head: return
-        if not self.head.next:
-            self.head = None
+def input_name():
+    while True:
+        name = input("ENTER NAME (letters only): ")
+        if name.replace(" ", "").isalpha():
+            return name
         else:
-            t = self.head
-            while t.next.next:
-                t = t.next
-            t.next = None
-        self.count -= 1
+            print("NAME MUST BE LETTERS ONLY!")
 
-    def delete_pos(self, pos):
-        if pos < 1 or pos > self.count: return
-        if pos == 1:
-            self.delete_awal()
-            return
-        t = self.head
-        for _ in range(pos - 2):
-            t = t.next
-        t.next = t.next.next
-        self.count -= 1
+def insert(pos):
+    global head, size
 
-    def delete_nim(self, nim):
-        if not self.head: return
-        if self.head.nim == nim:
-            self.head = self.head.next
-            self.count -= 1
-            return
-        t = self.head
-        while t.next and t.next.nim != nim:
-            t = t.next
-        if t.next:
-            t.next = t.next.next
-            self.count -= 1
+    if size == MAX:
+        print("DATA IS FULL!")
+        return
 
-    def show(self):
-        t = self.head
-        i = 1
-        while t:
-            print(f"{i}. {t.nim} - {t.nama}")
-            t = t.next
-            i += 1
-        print("Jumlah:", self.count)
+    nim = input_nim()
+    name = input_name()
+    new_node = Node(nim, name)
 
+    if pos == 0:
+        new_node.next = head
+        head = new_node
+    else:
+        temp = head
+        for _ in range(pos - 1):
+            temp = temp.next
+        new_node.next = temp.next
+        temp.next = new_node
 
-l = LinkedList()
+    size += 1
+
+def delete(pos):
+    global head, size
+
+    if size == 0:
+        print("EMPTY DATA!")
+        return
+
+    if pos == 0:
+        head = head.next
+    else:
+        temp = head
+        for _ in range(pos - 1):
+            temp = temp.next
+        temp.next = temp.next.next
+
+    size -= 1
+
+def show_data():
+    if size == 0:
+        print("EMPTY DATA!")
+        return
+
+    temp = head
+    i = 1
+    while temp:
+        print(f"{i}. NIM: {temp.nim} | Name: {temp.name}")
+        temp = temp.next
+        i += 1
+
 
 while True:
-    print("1.Insert Awal")
-    print("2.Insert Posisi")
-    print("3.Insert Akhir")
-    print("4.Delete Awal")
-    print("5.Delete Posisi")
-    print("6.Delete Akhir")
-    print("7.Delete by NIM")
-    print("8.Show")
-    print("9.Exit")
-    p = int(input("Pilih: "))
+    menu()
+    try:
+        choice = int(input("SELECT MENU: "))
 
-    if p == 1:
-        l.insert_awal(input("NIM: "), input("Nama: "))
-    elif p == 2:
-        pos = int(input("Posisi: "))
-        l.insert_pos(input("NIM: "), input("Nama: "), pos)
-    elif p == 3:
-        l.insert_akhir(input("NIM: "), input("Nama: "))
-    elif p == 4:
-        l.delete_awal()
-    elif p == 5:
-        l.delete_pos(int(input("Posisi: ")))
-    elif p == 6:
-        l.delete_akhir()
-    elif p == 7:
-        l.delete_nim(input("NIM: "))
-    elif p == 8:
-        l.show()
-    elif p == 9:
-        break
+        if choice == 1:
+            insert(0)
+
+        elif choice == 2:
+            pos = int(input(f"ENTER POSITION (1-{size+1}): ")) - 1
+            if 0 <= pos <= size:
+                insert(pos)
+            else:
+                print("INVALID POSITION!")
+
+        elif choice == 3:
+            insert(size)
+
+        elif choice == 4:
+            delete(0)
+
+        elif choice == 5:
+            pos = int(input(f"ENTER POSITION (1-{size}): ")) - 1
+            if 0 <= pos < size:
+                delete(pos)
+            else:
+                print("INVALID POSITION!")
+
+        elif choice == 6:
+            delete(size - 1)
+
+        elif choice == 7:
+            delete(0)
+
+        elif choice == 8:
+            show_data()
+
+        elif choice == 9:
+            print("PROGRAM COMPLETED.")
+            break
+
+        else:
+            print("INVALID MENU!")
+
+    except ValueError:
+        print("INPUT MUST BE NUMBER!")
