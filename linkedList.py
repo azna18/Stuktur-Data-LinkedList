@@ -1,43 +1,31 @@
-class Node:
-    def __init__(self, nim, name):
-        self.nim = nim
-        self.name = name
-        self.next = None
-
+MAX = 10
 head = None
 size = 0
-MAX = 10
+counter = 0
 
-def menu():
-    print("\n=== STUDENT LINKED LIST MENU ===")
-    print("1. Insert at beginning")
-    print("2. Insert at given position")
-    print("3. Insert at end")
-    print("4. Delete from beginning")
-    print("5. Delete given position")
-    print("6. Delete from end")
-    print("7. Delete first occurrence")
-    print("8. Show data")
-    print("9. Exit")
+class Node:
+    def __init__(self, nim, name, order):
+        self.nim = nim
+        self.name = name
+        self.order = order
+        self.next = None
 
 def input_nim():
     while True:
-        nim = input("ENTER NIM (numbers only): ")
+        nim = input("Input NIM (numbers only): ")
         if nim.isdigit():
             return nim
-        else:
-            print("NIM MUST BE NUMBERS ONLY!")
+        print("NIM must be numbers only!")
 
 def input_name():
     while True:
-        name = input("ENTER NAME (letters only): ")
+        name = input("Input Name (letters only): ")
         if name.replace(" ", "").isalpha():
             return name
-        else:
-            print("NAME MUST BE LETTERS ONLY!")
+        print("Name must be letters only!")
 
 def insert(pos):
-    global head, size
+    global head, size, counter
 
     if size == MAX:
         print("DATA IS FULL!")
@@ -45,7 +33,9 @@ def insert(pos):
 
     nim = input_nim()
     name = input_name()
-    new_node = Node(nim, name)
+
+    counter += 1
+    new_node = Node(nim, name, counter)
 
     if pos == 0:
         new_node.next = head
@@ -58,6 +48,7 @@ def insert(pos):
         temp.next = new_node
 
     size += 1
+    print("Data inserted successfully.")
 
 def delete(pos):
     global head, size
@@ -75,63 +66,110 @@ def delete(pos):
         temp.next = temp.next.next
 
     size -= 1
+    print("Data deleted successfully.")
 
-def show_data():
+def delete_first_inserted():
+    global head, size
+
     if size == 0:
         print("EMPTY DATA!")
         return
 
     temp = head
-    i = 1
-    while temp:
-        print(f"{i}. NIM: {temp.nim} | Name: {temp.name}")
-        temp = temp.next
-        i += 1
+    prev = None
+    smallest = temp.order
+    target = temp
+    target_prev = None
 
+    while temp:
+        if temp.order < smallest:
+            smallest = temp.order
+            target = temp
+            target_prev = prev
+        prev = temp
+        temp = temp.next
+
+    if target_prev is None:
+        head = target.next
+    else:
+        target_prev.next = target.next
+
+    size -= 1
+    print("First inserted data deleted.")
+
+def display():
+    if size == 0:
+        print("EMPTY DATA!")
+        return
+
+    temp = head
+    print("\nCurrent Data:")
+    while temp:
+        print("NIM:", temp.nim, "| Name:", temp.name)
+        temp = temp.next
+    print()
 
 while True:
-    menu()
-    try:
-        choice = int(input("SELECT MENU: "))
+    print("\n=== STUDENT MENU ===")
+    print("1. Insert at beginning")
+    print("2. Insert at given position")
+    print("3. Insert at end")
+    print("4. Delete from beginning")
+    print("5. Delete from given position")
+    print("6. Delete from end")
+    print("7. Delete first occurence")
+    print("8. Show data")
+    print("9. Exit")
 
-        if choice == 1:
-            insert(0)
+    choice = input("Choose menu: ")
 
-        elif choice == 2:
-            pos = int(input(f"ENTER POSITION (1-{size+1}): ")) - 1
-            if 0 <= pos <= size:
-                insert(pos)
-            else:
-                print("INVALID POSITION!")
+    if choice == "1":
+        insert(0)
 
-        elif choice == 3:
-            insert(size)
-
-        elif choice == 4:
-            delete(0)
-
-        elif choice == 5:
-            pos = int(input(f"ENTER POSITION (1-{size}): ")) - 1
-            if 0 <= pos < size:
-                delete(pos)
-            else:
-                print("INVALID POSITION!")
-
-        elif choice == 6:
-            delete(size - 1)
-
-        elif choice == 7:
-            delete(0)
-
-        elif choice == 8:
-            show_data()
-
-        elif choice == 9:
-            print("PROGRAM COMPLETED.")
-            break
-
+    elif choice == "2":
+        if size == 0:
+            print("EMPTY DATA!")
         else:
-            print("INVALID MENU!")
+            try:
+                pos = int(input("Position (1 - {}): ".format(size + 1))) - 1
+                if 0 <= pos <= size:
+                    insert(pos)
+                else:
+                    print("Invalid position!")
+            except:
+                print("Position must be number!")
 
-    except ValueError:
-        print("INPUT MUST BE NUMBER!")
+    elif choice == "3":
+        insert(size)
+
+    elif choice == "4":
+        delete(0)
+
+    elif choice == "5":
+        if size == 0:
+            print("EMPTY DATA!")
+        else:
+            try:
+                pos = int(input("Position (1 - {}): ".format(size))) - 1
+                if 0 <= pos < size:
+                    delete(pos)
+                else:
+                    print("Invalid position!")
+            except:
+                print("Position must be number!")
+
+    elif choice == "6":
+        delete(size - 1)
+
+    elif choice == "7":
+        delete_first_inserted()
+
+    elif choice == "8":
+        display()
+
+    elif choice == "9":
+        print("Program finished.")
+        break
+
+    else:
+        print("Invalid choice!")
