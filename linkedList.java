@@ -4,28 +4,31 @@ public class LinkedList1 {
 
     static class Node {
         String nim, name;
+        int order;
         Node next;
 
-        Node(String nim, String name) {
+        Node(String nim, String name, int order) {
             this.nim = nim;
             this.name = name;
+            this.order = order;
         }
     }
 
     static Node head = null;
     static int size = 0;
+    static int counter = 0;
     static final int MAX = 10;
     static Scanner input = new Scanner(System.in);
 
     static void menu() {
-        System.out.println("\n=== STUDENT LINKED LIST MENU ===");
+        System.out.println("\n=== STUDENT MENU ===");
         System.out.println("1. Insert at beginning");
         System.out.println("2. Insert at given position");
         System.out.println("3. Insert at end");
         System.out.println("4. Delete from beginning");
         System.out.println("5. Delete given position");
         System.out.println("6. Delete from end");
-        System.out.println("7. Delete first occurrence");
+        System.out.println("7. Delete first occurence");
         System.out.println("8. Show data");
         System.out.println("9. Exit");
     }
@@ -48,25 +51,27 @@ public class LinkedList1 {
         }
     }
 
-    static void insertAtBeginning() {
+    static Node createNode() {
         if (size == MAX) {
             System.out.println("DATA IS FULL!");
-            return;
+            return null;
         }
+        counter++;
+        return new Node(inputNIM(), inputName(), counter);
+    }
 
-        Node newNode = new Node(inputNIM(), inputName());
+    static void insertAtBeginning() {
+        Node newNode = createNode();
+        if (newNode == null) return;
+
         newNode.next = head;
         head = newNode;
         size++;
     }
 
     static void insertAtEnd() {
-        if (size == MAX) {
-            System.out.println("DATA IS FULL!");
-            return;
-        }
-
-        Node newNode = new Node(inputNIM(), inputName());
+        Node newNode = createNode();
+        if (newNode == null) return;
 
         if (head == null) {
             head = newNode;
@@ -86,6 +91,12 @@ public class LinkedList1 {
         }
 
         System.out.print("ENTER POSITION (1-" + (size + 1) + "): ");
+        if (!input.hasNextInt()) {
+            System.out.println("POSITION MUST BE NUMBER!");
+            input.nextLine();
+            return;
+        }
+
         int pos = input.nextInt();
         input.nextLine();
 
@@ -93,14 +104,16 @@ public class LinkedList1 {
             System.out.println("INVALID POSITION!");
             return;
         }
+
         if (pos == 1) {
             insertAtBeginning();
             return;
         }
 
-        Node newNode = new Node(inputNIM(), inputName());
-        Node temp = head;
+        Node newNode = createNode();
+        if (newNode == null) return;
 
+        Node temp = head;
         for (int i = 1; i < pos - 1; i++)
             temp = temp.next;
 
@@ -140,6 +153,12 @@ public class LinkedList1 {
             return;
         }
         System.out.print("ENTER POSITION (1-" + size + "): ");
+        if (!input.hasNextInt()) {
+            System.out.println("POSITION MUST BE NUMBER!");
+            input.nextLine();
+            return;
+        }
+
         int pos = input.nextInt();
         input.nextLine();
 
@@ -158,6 +177,38 @@ public class LinkedList1 {
 
         temp.next = temp.next.next;
         size--;
+    }
+
+    static void deleteFirstInserted() {
+        if (size == 0) {
+            System.out.println("EMPTY DATA!");
+            return;
+        }
+
+        Node temp = head;
+        Node prev = null;
+        Node target = head;
+        Node targetPrev = null;
+
+        int smallest = head.order;
+
+        while (temp != null) {
+            if (temp.order < smallest) {
+                smallest = temp.order;
+                target = temp;
+                targetPrev = prev;
+            }
+            prev = temp;
+            temp = temp.next;
+        }
+
+        if (targetPrev == null)
+            head = target.next;
+        else
+            targetPrev.next = target.next;
+
+        size--;
+        System.out.println("FIRST INSERTED DATA DELETED.");
     }
 
     static void showData() {
@@ -193,7 +244,7 @@ public class LinkedList1 {
                     case 4 -> deleteAtBeginning();
                     case 5 -> deleteAtPosition();
                     case 6 -> deleteAtEnd();
-                    case 7 -> deleteAtBeginning();
+                    case 7 -> deleteFirstInserted();
                     case 8 -> showData();
                     case 9 -> System.out.println("PROGRAM COMPLETED.");
                     default -> System.out.println("INVALID MENU!");
